@@ -1,0 +1,39 @@
+{
+  "name": "pulsar-test",
+  "version": "1.0.0",
+  "description": "Pulsar E2E UI Test",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "playwright test"
+  },
+  "keywords": [
+    "pulsar",
+    "playwright"
+  ],
+  "author": "Aaron Chen",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.22.2",
+    "@types/lodash": "^4.14.182",
+    "@types/luxon": "^2.3.2",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-prettier-standard": "^4.0.1",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "prettier": "^2.6.2",
+    "prettier-config-standard": "^5.0.0",
+    "typescript": "^4.7.2"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "lodash": "^4.17.21",
+    "luxon": "^2.4.0"
+  }
+}
