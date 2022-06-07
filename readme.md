@@ -1,6 +1,8 @@
 ## Install
 
 ```bash
+git clone https://github.com/aaronchen/pulsar-test.git
+cd pulsar-test
 npm install
 npx playwright install chromium
 code . # Please install recommended extensions when you launch the workspace 
