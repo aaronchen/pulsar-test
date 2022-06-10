@@ -13,19 +13,20 @@ class QuickSearch {
     this.resultsFound = page.locator('#totalQueryTime')
   }
 
-  async fillAndClick(searchText: string, options: { nth?: number; resultText?: string } = { nth: 0 }) {
-    options = { nth: 0, resultText: undefined, ...options }
+  async fillAndClick(
+    searchText: string,
+    options: { nth?: number; resultText?: string } = { nth: 0, resultText: undefined }
+  ) {
+    const _nth = options.nth ?? 0
+    let _resultText = options.resultText ?? undefined
 
     await this.quickSearchText.fill(searchText)
 
-    if (options.resultText === undefined) {
-      options.resultText = searchText
+    if (_resultText === undefined) {
+      _resultText = searchText
     }
 
-    await this.quickSearchResults
-      .filter({ hasText: options.resultText })
-      .nth(options.nth ?? 0)
-      .click()
+    await this.quickSearchResults.filter({ hasText: _resultText }).nth(_nth).click()
   }
 
   async waitForSearchResults() {

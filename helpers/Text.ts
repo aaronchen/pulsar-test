@@ -9,12 +9,13 @@ class Text {
     days: number,
     options: { format?: string; timezone?: string } = { format: 'LL/dd/yyyy', timezone: 'local' }
   ): string {
-    options = { format: 'LL/dd/yyyy', timezone: 'local', ...options }
+    const _format = options.format ?? 'LL/dd/yyyy'
+    const _timezone = options.timezone ?? 'local'
 
     if (days >= 0) {
-      return DateTime.now().setZone(options.timezone).plus({ days }).toFormat(options.format)
+      return DateTime.now().setZone(_timezone).plus({ days }).toFormat(_format)
     } else {
-      return DateTime.now().setZone(options.timezone).minus({ days }).toFormat(options.format)
+      return DateTime.now().setZone(_timezone).minus({ days }).toFormat(_format)
     }
   }
 

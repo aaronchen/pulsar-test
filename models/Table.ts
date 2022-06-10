@@ -59,14 +59,15 @@ class Table<ColumnNameType extends string, MenuNameType extends string = ''> {
     hasText: string,
     options: { nth?: number; findType?: 'row' | 'cell' } = { nth: 0, findType: 'row' }
   ): Locator {
-    options = { nth: 0, findType: 'row', ...options }
+    const _nth = options.nth ?? 0
+    const _findType = options.findType ?? 'row'
 
     return this.tableLocator
-      .locator(options.findType === 'row' ? 'tbody tr' : 'tbody td', {
+      .locator(_findType === 'row' ? 'tbody tr' : 'tbody td', {
         has: this.columnLocators[columnNameType],
         hasText
       })
-      .nth(options.nth ?? 0)
+      .nth(_nth)
   }
 
   findCell(columnNameType: ColumnNameType, hasText: string, nth = 0): Locator {
