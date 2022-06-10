@@ -1,6 +1,6 @@
-import { Locator, Page } from '@playwright/test'
+import { ElementHandle, Locator, Page } from '@playwright/test'
 
-class Table<ColumnNameType extends string, MenuNameType extends string = undefined> {
+class Table<ColumnNameType extends string, MenuNameType extends string = ''> {
   protected readonly page: Page
   readonly tableId: string
   protected readonly columnNames: Record<ColumnNameType, string>
@@ -51,7 +51,7 @@ class Table<ColumnNameType extends string, MenuNameType extends string = undefin
   }
 
   async clickMenu(menuNameType: MenuNameType) {
-    await this.menuLocators[menuNameType].click()
+    if (this.menuLocators) await this.menuLocators[menuNameType].click()
   }
 
   find(
@@ -66,7 +66,7 @@ class Table<ColumnNameType extends string, MenuNameType extends string = undefin
         has: this.columnLocators[columnNameType],
         hasText
       })
-      .nth(options.nth)
+      .nth(options.nth ?? 0)
   }
 
   findCell(columnNameType: ColumnNameType, hasText: string, nth = 0): Locator {
@@ -87,7 +87,7 @@ class Table<ColumnNameType extends string, MenuNameType extends string = undefin
   }
 
   async filter(columnNameType: ColumnNameType, filterText: string, spinnerWait = 2000) {
-    const filterHandle = await this.filterLocators[columnNameType].nth(0).elementHandle()
+    const filterHandle = (await this.filterLocators[columnNameType].nth(0).elementHandle()) as ElementHandle
 
     await filterHandle.fill(filterText)
     await filterHandle.evaluate((element) => element.dispatchEvent(new KeyboardEvent('keyup')))

@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test'
+import { ElementHandle, Locator, Page } from '@playwright/test'
 import { Table } from './Table'
 
 /* === Change Request Tab === */
@@ -135,7 +135,7 @@ class ProductPage {
   async gotoTab(tab: ProductTab) {
     await this.page.waitForSelector(tab)
 
-    const $productTab = await this.page.$(tab)
+    const $productTab = (await this.page.$(tab)) as ElementHandle<HTMLElement>
     const isActiveTab = await $productTab.evaluate((el) => el.classList.contains('PageHeader--tabs--link__active'))
 
     if (!isActiveTab) {

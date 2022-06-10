@@ -22,12 +22,15 @@ class QuickSearch {
       options.resultText = searchText
     }
 
-    await this.quickSearchResults.filter({ hasText: options.resultText }).nth(options.nth).click()
+    await this.quickSearchResults
+      .filter({ hasText: options.resultText })
+      .nth(options.nth ?? 0)
+      .click()
   }
 
   async waitForSearchResults() {
     await this.page.waitForFunction((element) => {
-      return element.textContent.includes('result(s) found')
+      return element?.textContent?.includes('result(s) found')
     }, await this.resultsFound.elementHandle())
   }
 }
@@ -62,7 +65,7 @@ class UserInfo {
 
     const username = await this.username.textContent()
 
-    if (username.includes(name)) return
+    if (username?.includes(name)) return
 
     await this.username.click()
 

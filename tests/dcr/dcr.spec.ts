@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { Text } from '../../helpers/Text'
-import { QuickSearch } from '../../models/Navigation'
+import { QuickSearch, UserInfo } from '../../models/Navigation'
 import { ProductPage, ProductTab } from '../../models/Product'
 import { DcrPage, DcrAttachmentFrame } from '../../models/Dcr'
 
@@ -119,5 +119,36 @@ test.describe('DCR Test Suite @daily', () => {
     //   productPage.page.waitForEvent('popup'),
     //   productPage.deliverableTab.hardwareTable.findCell('name', 'HP 50W Slim AC Adapter').locator('a').click()
     // ])
+  })
+
+  test('should have a correct email address in My Profile - basic', async ({ page }) => {
+    await page.locator('#userName').click()
+    await page.locator('#UserDropdownMenu >> text=My Profile').click()
+
+    expect(await page.inputValue('#txtEmail')).toEqual('aaron.chen@hp.com')
+  })
+
+  test('should have a correct email address in My Profile - medium', async ({ page }) => {
+    await page.locator('#userName').click()
+
+    const dropdownMenuText = await page.locator('#UserDropdownMenu').innerText()
+
+    if (dropdownMenuText.includes('Stop Impersonation')) {
+      await page.locator('#UserDropdownMenu >> text=Stop Impersonation').click()
+      await page.locator('#userName').click()
+    }
+
+    await page.locator('#UserDropdownMenu >> text=My Profile').click()
+
+    expect(await page.inputValue('#txtEmail')).toEqual('aaron.chen@hp.com')
+  })
+
+  test('should have a correct email address in My Profile - advanced', async ({ page }) => {
+    const userInfo = new UserInfo(page)
+    await userInfo.impersonate('Max Yu')
+    await userInfo.username.click()
+    await userInfo.myProfile.click()
+
+    expect(await page.inputValue('#txtEmail')).toEqual('max.yu@hp.com')
   })
 })

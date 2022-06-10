@@ -6,7 +6,6 @@
   "recommendations": [
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "hookyqr.beautify",
     "mikestead.dotenv",
     "ms-playwright.playwright",
     "ms-vscode.powershell",
