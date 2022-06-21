@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Locator } from '@playwright/test'
 import { UserInfo } from '../../models/Navigation'
 
 test.beforeEach(async ({ page }) => {
@@ -50,5 +50,35 @@ test.describe('Sample Suite', () => {
     await page.frameLocator('#FrameElementInPulsar2').locator('#OkButton').click()
 
     expect(await page.inputValue('#SysTeamDropdown_45')).toEqual('26879')
+  })
+
+  test('should have correct Systems Engineering PM name', async ({ page }) => {
+    await page.locator('#quickSearchTextbox').fill('anna')
+    await page.locator('#resultTypeArea >> text=Anna 1.1').click()
+    await page.locator('text=See Full Roster').click()
+
+    // const name = page.locator('td:right-of(:nth-match(:text("Systems Engineering PM"), 1))').nth(0)
+    const name = page.locator(':nth-match(:text("Systems Engineering PM"), 1)').locator('xpath=..').locator('td')
+
+    await expect(name).toContainText('Eddy Liu')
+  })
+
+  test('should have correct Team Roaster', async ({ page }) => {
+    await page.locator('#quickSearchTextbox').fill('anna')
+    await page.locator('#resultTypeArea >> text=Anna 1.1').click()
+    await page.locator('text=See Full Roster').click()
+
+    const team = [
+      { role: 'System Manager', name: 'Chang, Michael' },
+      { role: 'Configuration Manager', name: 'srihari A' },
+      { role: 'Systems Engineering PM', name: 'Eddy Liu' },
+      { role: 'Program Office Program Manager', name: 'Lin, Rachel' },
+      { role: 'Marketing/Product Mgmt', name: '	yeh, wing' }
+    ]
+
+    for (const member of team) {
+      const name = page.locator(`:nth-match(th:text("${member.role}"), 1)`).locator('xpath=..').locator('td')
+      await expect(name).toContainText(member.name)
+    }
   })
 })
