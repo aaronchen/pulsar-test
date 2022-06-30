@@ -1,4 +1,4 @@
-import { test, expect, Locator } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import { UserInfo } from '../../models/Navigation'
 
 test.beforeEach(async ({ page }) => {
@@ -80,5 +80,25 @@ test.describe('Sample Suite', () => {
       const name = page.locator(`:nth-match(th:text("${member.role}"), 1)`).locator('xpath=..').locator('td')
       await expect(name).toContainText(member.name)
     }
+  })
+
+  test('should have correct release badge next to System Team', async ({ page }) => {
+    await page.locator('#quickSearchTextbox').fill('anna')
+    await page.locator('#resultTypeArea >> text=Anna 1.1').click()
+
+    const release = 'Feb 2018'
+    const releaseBadge = page.locator('.GeneralPageContent--table--title h6 .badge')
+    const filterButtonLocator = page.locator('#ProductReleaseIdTitle')
+    const filterDropdownLocator = page.locator('#FilterContent')
+
+    const currentRelease = await filterButtonLocator.locator('.Filter--item--value').textContent()
+
+    if (!currentRelease?.includes(release)) {
+      await filterButtonLocator.locator('.Pulsar-filter').click()
+      await filterDropdownLocator.locator('label', { hasText: release }).click()
+      await filterDropdownLocator.locator('#btnApply').click()
+    }
+
+    await expect(releaseBadge).toContainText(release)
   })
 })
