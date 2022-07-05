@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, ElementHandle } from '@playwright/test'
+import { Utils } from '../../helpers/Utils'
 import { UserInfo } from '../../models/Navigation'
 
 test.beforeEach(async ({ page }) => {
@@ -100,5 +101,30 @@ test.describe('Sample Suite', () => {
     }
 
     await expect(releaseBadge).toContainText(release)
+  })
+
+  test('can download Auto Bridge Root Setting Report', async ({ page }) => {
+    await page.locator('#quickSearchTextbox').fill('Auto Bridge')
+    await page.locator('#resultCommandArea >> text=Hardware Deliverables Auto Bridge Root Setting Report').click()
+
+    await page.selectOption('#BusinessSegmentList .dualList-select[data-control="left"]', ['1', '2'])
+    await page.locator('#BusinessSegmentList .dualList-add').click()
+
+    const productListSelect = await page.locator('#ProductList .dualList-select[data-control="left"]').elementHandle()
+    await productListSelect?.selectOption([
+      (await productListSelect.$('option:text("Bran")')) as ElementHandle,
+      (await productListSelect.$('option:text("Cubano")')) as ElementHandle,
+      (await productListSelect.$('option:text("Decaf")')) as ElementHandle
+    ])
+    await page.locator('#ProductList .dualList-add').click()
+
+    await page.locator('#ReleaseList .dualList-add-all').click()
+    await page.locator('#ComponentCategoryList .dualList-add-all').click()
+    await page.locator('#ComponentRootList .dualList-add-all').click()
+
+    const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#btnExport').click()])
+
+    expect(Utils.isPath((await download.path()) as string)).toBeTruthy()
+    expect(download.suggestedFilename().endsWith('.xlsx')).toBeTruthy()
   })
 })
