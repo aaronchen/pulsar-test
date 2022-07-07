@@ -22,7 +22,7 @@ class Excel {
     this.worksheet = this.workbook.Sheets[this.workbook.SheetNames[0]]
   }
 
-  getCell(cellAddress: string | ExcelCellAddress, sheetName?: string): XLSX.CellObject {
+  getCell(cellAddress: string | { columnIndex: number; rowIndex: number }, sheetName?: string): XLSX.CellObject {
     if ((cellAddress as ExcelCellAddress).columnIndex !== undefined) {
       return this.getWorkSheet(sheetName)[
         XLSX.utils.encode_cell({
@@ -69,7 +69,7 @@ class Excel {
 
   static getCellValue(
     excel: Uint8Array | ArrayBuffer | string,
-    cellAddress: string | ExcelCellAddress,
+    cellAddress: string | { columnIndex: number; rowIndex: number },
     sheetName?: string
   ): string | number | boolean | Date | undefined {
     return new Excel(excel).getCell(cellAddress, sheetName).v
