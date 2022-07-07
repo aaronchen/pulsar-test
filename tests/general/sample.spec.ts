@@ -137,5 +137,7 @@ test.describe('Sample Suite', () => {
 
     const secondHeader = Excel.getCellValue(file, { columnIndex: 6, rowIndex: 0 }) as string
     expect(secondHeader).toEqual('Cubano')
+
+    expect(Excel.isEqual(file, file)).toBeTruthy()
   })
 })

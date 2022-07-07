@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import * as XLSX from 'xlsx'
 
 type ExcelCellAddress = {
@@ -46,6 +47,10 @@ class Excel {
     return this.worksheet
   }
 
+  getWorkSheetNames(): string[] {
+    return this.workbook.SheetNames
+  }
+
   hasSheetName(sheetName: string): boolean {
     return this.workbook.SheetNames.includes(sheetName)
   }
@@ -62,16 +67,38 @@ class Excel {
     return XLSX.utils.sheet_to_txt(this.getWorkSheet(sheetName))
   }
 
-  static hasSheetName(excel: Uint8Array | ArrayBuffer | string, sheetName: string): boolean {
-    return new Excel(excel).hasSheetName(sheetName)
-  }
-
   static getCellValue(
     excel: Uint8Array | ArrayBuffer | string,
     cellAddress: string | ExcelCellAddress,
     sheetName?: string
   ): string | number | boolean | Date | undefined {
     return new Excel(excel).getCell(cellAddress, sheetName).v
+  }
+
+  static hasSheetName(excel: Uint8Array | ArrayBuffer | string, sheetName: string): boolean {
+    return new Excel(excel).hasSheetName(sheetName)
+  }
+
+  static isEqual(excel1: Uint8Array | ArrayBuffer | string, excel2: Uint8Array | ArrayBuffer | string): boolean {
+    const _excel1 = new Excel(excel1)
+    const _excel2 = new Excel(excel2)
+    const _excel1SheetNames = _excel1.getWorkSheetNames()
+    const _excel2SheetNames = _excel2.getWorkSheetNames()
+
+    if (!_.isEqual(_excel1SheetNames, _excel2SheetNames)) {
+      return false
+    }
+
+    for (const sheetName of _excel1SheetNames) {
+      const _sheet1Json = _excel1.toJson(sheetName)
+      const _sheet2Json = _excel2.toJson(sheetName)
+
+      if (!_.isEqual(_sheet1Json, _sheet2Json)) {
+        return false
+      }
+    }
+
+    return true
   }
 
   static read(data: Uint8Array | ArrayBuffer, options?: any): XLSX.WorkBook {
