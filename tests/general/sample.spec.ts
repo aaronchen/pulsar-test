@@ -1,4 +1,5 @@
 import { test, expect, ElementHandle } from '@playwright/test'
+import { Excel } from '../../helpers/Excel'
 import { Utils } from '../../helpers/Utils'
 import { UserInfo } from '../../models/Navigation'
 
@@ -118,13 +119,23 @@ test.describe('Sample Suite', () => {
     ])
     await page.locator('#ProductList .dualList-add').click()
 
+    await page.waitForLoadState('networkidle')
     await page.locator('#ReleaseList .dualList-add-all').click()
+    await page.waitForLoadState('networkidle')
     await page.locator('#ComponentCategoryList .dualList-add-all').click()
+    await page.waitForLoadState('networkidle')
     await page.locator('#ComponentRootList .dualList-add-all').click()
 
     const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#btnExport').click()])
+    const file = (await download.path()) as string
 
-    expect(Utils.isPath((await download.path()) as string)).toBeTruthy()
+    expect(Utils.isPath(file)).toBeTruthy()
     expect(download.suggestedFilename().endsWith('.xlsx')).toBeTruthy()
+
+    const firstHeader = Excel.getCellValue(file, 'F1') as string
+    expect(firstHeader).toEqual('Bran')
+
+    const secondHeader = Excel.getCellValue(file, { columnIndex: 6, rowIndex: 0 }) as string
+    expect(secondHeader).toEqual('Cubano')
   })
 })

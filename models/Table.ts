@@ -92,6 +92,10 @@ class Table<ColumnNameType extends string, MenuNameType extends string = ''> {
 
     await filterHandle.fill(filterText)
     await filterHandle.evaluate((element) => element.dispatchEvent(new KeyboardEvent('keyup')))
+    await this.waitForLoaded(spinnerWait)
+  }
+
+  async waitForLoaded(spinnerWait = 2000) {
     await Promise.race([
       this.page.waitForTimeout(spinnerWait),
       this.page.waitForSelector(this.loadingSelector, { state: 'visible' })
