@@ -69,8 +69,28 @@ type DeliverableHardwareTableColumnNameType =
 
 type DeliverableHardwareTableMenuNameType = 'removeRoot' | 'targetVersions' | 'properties'
 
+type DeliverableSoftwareTableColumnNameType =
+  | 'target'
+  | 'id'
+  | 'componentCategory'
+  | 'name'
+  | 'language'
+  | 'partNumber'
+  | 'version'
+  | 'release'
+  | 'pin'
+  | 'alerts'
+  | 'img'
+  | 'corpReady'
+  | 'targetNotes'
+  | 'distribution'
+  | 'images'
+
+type DeliverableSoftwareTableMenuNameType = 'removeTarget' | 'updateTargetNotes' | 'updateImageStrategy'
+
 class DeliverableTab {
   readonly hardwareTable: Table<DeliverableHardwareTableColumnNameType, DeliverableHardwareTableMenuNameType>
+  readonly softwareTable: Table<DeliverableSoftwareTableColumnNameType, DeliverableSoftwareTableMenuNameType>
 
   constructor(page: Page) {
     this.hardwareTable = new Table<DeliverableHardwareTableColumnNameType, DeliverableHardwareTableMenuNameType>(
@@ -98,6 +118,32 @@ class DeliverableTab {
         removeRoot: 'RemoveRoot',
         targetVersions: 'TargetVersions',
         properties: 'Properties'
+      }
+    )
+    this.softwareTable = new Table<DeliverableSoftwareTableColumnNameType, DeliverableSoftwareTableMenuNameType>(
+      page,
+      'tileGrid',
+      {
+        target: 'Target',
+        id: 'DeliverableVersionId',
+        componentCategory: 'ComponentCategory',
+        name: 'DeliverableName',
+        language: 'Language',
+        partNumber: 'PartNumber',
+        version: 'ComponentVersion',
+        release: 'Release',
+        pin: 'InternalRevision',
+        alerts: 'Alerts',
+        img: 'DisplayImage',
+        corpReady: 'CorpReadyImage',
+        targetNotes: 'TargetNotes',
+        distribution: 'Distribution',
+        images: 'Image'
+      },
+      {
+        removeTarget: 'RemoveTarget',
+        updateTargetNotes: 'UpdateTargetNotes',
+        updateImageStrategy: 'UpdateImageStrategy'
       }
     )
   }
