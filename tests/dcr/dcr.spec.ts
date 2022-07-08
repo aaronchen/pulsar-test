@@ -95,32 +95,6 @@ test.describe('DCR Test Suite @daily', () => {
     await expect(dcrPage.informationModal.body).toContainText('Successfully Created 1 DCRs')
   })
 
-  test('can use Table page object model', async ({ page }) => {
-    const productName = '20190427ForUSAServer'
-
-    const quickSearch = new QuickSearch(page)
-    await quickSearch.fillAndClick(productName)
-
-    const productPage = new ProductPage(page)
-    await productPage.gotoTab(ProductTab.Deliverables)
-
-    await productPage.deliverableTab.hardwareTable.filter('name', 'jay')
-
-    // await productPage.deliverableTab.hardwareTable.findHeader('componentCategory').click()
-
-    await productPage.deliverableTab.hardwareTable.filter('name', '')
-
-    // await productPage.deliverableTab.hardwareTable.findRow('name', 'HP 50W Slim AC Adapter').click({ button: 'right' })
-    // await productPage.deliverableTab.hardwareTable.clickMenu('properties')
-    // await productPage.page.waitForTimeout(3000)
-
-    // await productPage.deliverableTab.hardwareTable.findCell('name', 'HP 50W Slim AC Adapter').click()
-    // await Promise.all([
-    //   productPage.page.waitForEvent('popup'),
-    //   productPage.deliverableTab.hardwareTable.findCell('name', 'HP 50W Slim AC Adapter').locator('a').click()
-    // ])
-  })
-
   test('should have a correct email address in My Profile - basic', async ({ page }) => {
     await page.locator('#userName').click()
     await page.locator('#UserDropdownMenu >> text=My Profile').click()

@@ -54,7 +54,7 @@ class Table<ColumnNameType extends string, MenuNameType extends string = ''> {
     if (this.menuLocators) await this.menuLocators[menuNameType].click()
   }
 
-  find(
+  locate(
     columnNameType: ColumnNameType,
     hasText: string,
     options: { nth?: number; findType?: 'row' | 'cell' } = { nth: 0, findType: 'row' }
@@ -70,11 +70,11 @@ class Table<ColumnNameType extends string, MenuNameType extends string = ''> {
       .nth(_nth)
   }
 
-  findCell(columnNameType: ColumnNameType, hasText: string, nth = 0): Locator {
+  locateCell(columnNameType: ColumnNameType, hasText: string, nth = 0): Locator {
     return this.columnLocators[columnNameType].locator(':scope', { hasText }).nth(nth)
   }
 
-  findRow(columnNameType: ColumnNameType, hasText: string, nth = 0): Locator {
+  locateRow(columnNameType: ColumnNameType, hasText: string, nth = 0): Locator {
     return this.tableLocator
       .locator('tbody tr', {
         has: this.columnLocators[columnNameType],
@@ -83,7 +83,7 @@ class Table<ColumnNameType extends string, MenuNameType extends string = ''> {
       .nth(nth)
   }
 
-  findHeader(columnNameType: ColumnNameType): Locator {
+  locateHeader(columnNameType: ColumnNameType): Locator {
     return this.headerLocator.locator(':scope', { has: this.headerLocators[columnNameType] })
   }
 

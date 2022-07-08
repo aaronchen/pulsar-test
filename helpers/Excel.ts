@@ -1,11 +1,6 @@
 import _ from 'lodash'
 import * as XLSX from 'xlsx'
 
-type ExcelCellAddress = {
-  columnIndex: number
-  rowIndex: number
-}
-
 class Excel {
   protected workbook: XLSX.WorkBook
   protected worksheet: XLSX.WorkSheet
@@ -22,14 +17,9 @@ class Excel {
     this.worksheet = this.workbook.Sheets[this.workbook.SheetNames[0]]
   }
 
-  getCell(cellAddress: string | { columnIndex: number; rowIndex: number }, sheetName?: string): XLSX.CellObject {
-    if ((cellAddress as ExcelCellAddress).columnIndex !== undefined) {
-      return this.getWorkSheet(sheetName)[
-        XLSX.utils.encode_cell({
-          c: (cellAddress as ExcelCellAddress).columnIndex,
-          r: (cellAddress as ExcelCellAddress).rowIndex
-        })
-      ]
+  getCell(cellAddress: string | { c: number; r: number }, sheetName?: string): XLSX.CellObject {
+    if ((cellAddress as XLSX.CellAddress).c !== undefined) {
+      return this.getWorkSheet(sheetName)[XLSX.utils.encode_cell(cellAddress as XLSX.CellAddress)]
     } else {
       return this.getWorkSheet(sheetName)[XLSX.utils.encode_cell(XLSX.utils.decode_cell(cellAddress as string))]
     }
@@ -38,13 +28,17 @@ class Excel {
   getWorkSheet(sheetName?: string): XLSX.WorkSheet {
     if (sheetName) {
       if (this.hasSheetName(sheetName)) {
-        this.worksheet = this.workbook.Sheets[sheetName]
+        this.worksheet = this.getWorkSheets()[sheetName]
       } else {
-        throw new Error(`${sheetName} is not found`)
+        throw new Error(`WorkSheet "${sheetName}" cannot not found`)
       }
     }
 
     return this.worksheet
+  }
+
+  getWorkSheets(): { [sheet: string]: XLSX.WorkSheet } {
+    return this.workbook.Sheets
   }
 
   getWorkSheetNames(): string[] {
@@ -52,7 +46,7 @@ class Excel {
   }
 
   hasSheetName(sheetName: string): boolean {
-    return this.workbook.SheetNames.includes(sheetName)
+    return this.getWorkSheetNames().includes(sheetName)
   }
 
   toCsv(sheetName?: string): string {
@@ -69,7 +63,7 @@ class Excel {
 
   static getCellValue(
     excel: Uint8Array | ArrayBuffer | string,
-    cellAddress: string | { columnIndex: number; rowIndex: number },
+    cellAddress: string | { c: number; r: number },
     sheetName?: string
   ): string | number | boolean | Date | undefined {
     return new Excel(excel).getCell(cellAddress, sheetName).v
