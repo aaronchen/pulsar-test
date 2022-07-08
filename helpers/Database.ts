@@ -8,14 +8,8 @@ class Database {
       dialect: 'mssql',
       dialectModulePath: 'msnodesqlv8/lib/sequelize',
       dialectOptions: {
-        user: '',
-        password: '',
-        database: 'node',
         options: {
-          driver: '',
-          connectionString,
-          trustedConnection: true,
-          instanceName: ''
+          connectionString
         }
       },
       pool: {
