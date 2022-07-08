@@ -14,9 +14,10 @@
   "author": "Aaron Chen",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.23.1",
+    "@playwright/test": "^1.23.2",
     "@types/lodash": "^4.14.182",
     "@types/luxon": "^2.3.2",
+    "@types/sequelize": "^4.28.14",
     "@typescript-eslint/eslint-plugin": "^5.27.0",
     "@typescript-eslint/parser": "^5.30.5",
     "eslint": "^8.19.0",
@@ -35,6 +36,9 @@
     "dotenv": "^16.0.1",
     "lodash": "^4.17.21",
     "luxon": "^2.4.0",
+    "msnodesqlv8": "^2.5.0",
+    "mssql": "^8.1.2",
+    "sequelize": "^6.21.2",
     "xlsx": "^0.18.5"
   }
 }
