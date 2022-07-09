@@ -49,6 +49,25 @@ class ChangeRequestTab {
 
 /* === Deliverable Tab === */
 
+type DeliverableSoftwareTableColumnNameType =
+  | 'target'
+  | 'id'
+  | 'componentCategory'
+  | 'name'
+  | 'language'
+  | 'partNumber'
+  | 'version'
+  | 'release'
+  | 'pin'
+  | 'alerts'
+  | 'img'
+  | 'corpReady'
+  | 'targetNotes'
+  | 'distribution'
+  | 'images'
+
+type DeliverableSoftwareTableMenuNameType = 'removeTarget' | 'updateTargetNotes' | 'updateImageStrategy'
+
 type DeliverableHardwareTableColumnNameType =
   | 'id'
   | 'componentCategory'
@@ -69,30 +88,41 @@ type DeliverableHardwareTableColumnNameType =
 
 type DeliverableHardwareTableMenuNameType = 'removeRoot' | 'targetVersions' | 'properties'
 
-type DeliverableSoftwareTableColumnNameType =
-  | 'target'
-  | 'id'
-  | 'componentCategory'
-  | 'name'
-  | 'language'
-  | 'partNumber'
-  | 'version'
-  | 'release'
-  | 'pin'
-  | 'alerts'
-  | 'img'
-  | 'corpReady'
-  | 'targetNotes'
-  | 'distribution'
-  | 'images'
-
-type DeliverableSoftwareTableMenuNameType = 'removeTarget' | 'updateTargetNotes' | 'updateImageStrategy'
-
 class DeliverableTab {
-  readonly hardwareTable: Table<DeliverableHardwareTableColumnNameType, DeliverableHardwareTableMenuNameType>
+  protected readonly page: Page
   readonly softwareTable: Table<DeliverableSoftwareTableColumnNameType, DeliverableSoftwareTableMenuNameType>
+  readonly hardwareTable: Table<DeliverableHardwareTableColumnNameType, DeliverableHardwareTableMenuNameType>
 
   constructor(page: Page) {
+    this.page = page
+
+    this.softwareTable = new Table<DeliverableSoftwareTableColumnNameType, DeliverableSoftwareTableMenuNameType>(
+      page,
+      'tileGrid',
+      {
+        target: 'Target',
+        id: 'DeliverableVersionId',
+        componentCategory: 'ComponentCategory',
+        name: 'DeliverableName',
+        language: 'Language',
+        partNumber: 'PartNumber',
+        version: 'ComponentVersion',
+        release: 'Release',
+        pin: 'InternalRevision',
+        alerts: 'Alerts',
+        img: 'DisplayImage',
+        corpReady: 'CorpReadyImage',
+        targetNotes: 'TargetNotes',
+        distribution: 'Distribution',
+        images: 'Image'
+      },
+      {
+        removeTarget: 'RemoveTarget',
+        updateTargetNotes: 'UpdateTargetNotes',
+        updateImageStrategy: 'UpdateImageStrategy'
+      }
+    )
+
     this.hardwareTable = new Table<DeliverableHardwareTableColumnNameType, DeliverableHardwareTableMenuNameType>(
       page,
       'tileGrid',
@@ -120,32 +150,46 @@ class DeliverableTab {
         properties: 'Properties'
       }
     )
-    this.softwareTable = new Table<DeliverableSoftwareTableColumnNameType, DeliverableSoftwareTableMenuNameType>(
-      page,
-      'tileGrid',
-      {
-        target: 'Target',
-        id: 'DeliverableVersionId',
-        componentCategory: 'ComponentCategory',
-        name: 'DeliverableName',
-        language: 'Language',
-        partNumber: 'PartNumber',
-        version: 'ComponentVersion',
-        release: 'Release',
-        pin: 'InternalRevision',
-        alerts: 'Alerts',
-        img: 'DisplayImage',
-        corpReady: 'CorpReadyImage',
-        targetNotes: 'TargetNotes',
-        distribution: 'Distribution',
-        images: 'Image'
-      },
-      {
-        removeTarget: 'RemoveTarget',
-        updateTargetNotes: 'UpdateTargetNotes',
-        updateImageStrategy: 'UpdateImageStrategy'
-      }
-    )
+  }
+
+  async setTableFiltersTo(filters: {
+    type: 'Software' | 'Hardware' | 'Firmware' | 'Documentation'
+    team?: string
+    filter?: string
+    release?: string
+  }) {
+    const filterButton = this.page.locator('.Pulsar-filter:visible')
+    const typeLocator = this.page.locator(`[for*="DelTypeIdOption_${filters.type}"]`)
+    let teamLocator: Locator
+    let filterLocator: Locator
+    let releaseLocator: Locator
+    const applyButton = this.page.locator('#btnApply')
+
+    await filterButton.click()
+    await typeLocator.click()
+
+    if (filters.team) {
+      teamLocator = this.page.locator('[for*="DeliverableTeamIdOption_"]', { hasText: filters.team })
+      await teamLocator.click()
+    }
+
+    if (filters.filter) {
+      filterLocator = this.page.locator('[for*="FilterOption_"]', { hasText: filters.filter })
+      await filterLocator.click()
+    }
+
+    if (filters.release) {
+      releaseLocator = this.page.locator('[for*="ProductReleaseOption_"]', { hasText: filters.release })
+      await releaseLocator.click()
+    }
+
+    if (await applyButton.isEnabled()) {
+      await applyButton.click()
+      await applyButton.waitFor({ state: 'hidden' })
+      await this.page.waitForLoadState('load')
+    } else {
+      await filterButton.click()
+    }
   }
 }
 

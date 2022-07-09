@@ -1,10 +1,19 @@
 import { DateTime } from 'luxon'
+import _ from 'lodash'
 
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 const DIGITS = '0123456789'
 const PUNCTUATION = `!"#$%&'()*+,-./:;<=>?@[\\]^_\`{|}~`
 
 class Text {
+  static camelCase(word: string): string {
+    return _.camelCase(word)
+  }
+
+  static capitalize(word: string): string {
+    return _.capitalize(word)
+  }
+
   static daySince(
     days: number,
     options: { format?: string; timezone?: string } = { format: 'LL/dd/yyyy', timezone: 'local' }
@@ -51,6 +60,10 @@ class Text {
 
   static timestamp(format = 'yyyyLLddHHmmss'): string {
     return DateTime.now().toFormat(format)
+  }
+
+  static trim(word: string, chars?: string): string {
+    return _.trim(word, chars)
   }
 }
 
