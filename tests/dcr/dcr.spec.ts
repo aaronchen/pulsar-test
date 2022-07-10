@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { Text } from '../../helpers/Text'
 import { QuickSearch, UserInfo } from '../../models/Navigation'
-import { ProductPage, ProductTab } from '../../models/Product'
+import { ProductPage } from '../../models/Product'
 import { DcrPage, DcrAttachmentFrame } from '../../models/Dcr'
 
 // test.describe.configure({ mode: 'serial' })
@@ -29,7 +29,7 @@ test.describe('DCR Test Suite @daily', () => {
     await quickSearch.fillAndClick(productName)
 
     const productPage = new ProductPage(page)
-    await productPage.gotoTab(ProductTab.ChangeRequest)
+    await productPage.gotoTab('ChangeRequest')
 
     const [newPage] = await Promise.all([
       productPage.page.waitForEvent('popup'),

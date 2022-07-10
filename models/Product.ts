@@ -222,10 +222,12 @@ class ProductPage {
     this.deliverableTab = new DeliverableTab(page)
   }
 
-  async gotoTab(tab: ProductTab) {
-    await this.page.waitForSelector(tab)
+  async gotoTab(tab: keyof typeof ProductTab) {
+    const tabSelector = ProductTab[tab]
 
-    const $productTab = (await this.page.$(tab)) as ElementHandle<HTMLElement>
+    await this.page.waitForSelector(tabSelector)
+
+    const $productTab = (await this.page.$(tabSelector)) as ElementHandle<HTMLElement>
     const isActiveTab = await $productTab.evaluate((el) => el.classList.contains('PageHeader--tabs--link__active'))
 
     if (!isActiveTab) {
@@ -235,4 +237,4 @@ class ProductPage {
   }
 }
 
-export { ProductPage, ProductTab }
+export { ProductPage }
