@@ -18,16 +18,16 @@ class Utils {
     return fs.readFileSync(filepath)
   }
 
-  static readJSON(jsonFile: string) {
+  static readJSON(jsonFile: string): any {
     const data = Utils.readFile(jsonFile) as string
     return JSON.parse(data)
   }
 
-  static removeDir(directory: string) {
+  static removeDir(directory: string): void {
     if (Utils.isPath(directory)) fs.rmdirSync(directory, { recursive: true })
   }
 
-  static removeFile(filepath: string) {
+  static removeFile(filepath: string): void {
     if (Utils.isPath(filepath)) fs.unlinkSync(filepath)
   }
 

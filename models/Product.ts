@@ -1,4 +1,5 @@
 import { ElementHandle, Locator, Page } from '@playwright/test'
+import { BasePage } from './Base'
 import { Table } from './Table'
 
 /* === Change Request Tab === */
@@ -211,27 +212,25 @@ enum ProductTab {
   SupplyChain = '#tabLink14'
 }
 
-class ProductPage {
-  readonly page: Page
+class ProductPage extends BasePage {
   readonly changeRequestTab: ChangeRequestTab
   readonly deliverableTab: DeliverableTab
 
   constructor(page: Page) {
-    this.page = page
+    super(page)
+
     this.changeRequestTab = new ChangeRequestTab(page)
     this.deliverableTab = new DeliverableTab(page)
   }
 
   async gotoTab(tab: keyof typeof ProductTab) {
-    const tabSelector = ProductTab[tab]
+    const tabLocator = this.page.locator(ProductTab[tab])
 
-    await this.page.waitForSelector(tabSelector)
-
-    const $productTab = (await this.page.$(tabSelector)) as ElementHandle<HTMLElement>
-    const isActiveTab = await $productTab.evaluate((el) => el.classList.contains('PageHeader--tabs--link__active'))
+    await tabLocator.waitFor({ state: 'visible' })
+    const isActiveTab = await this.hasClass(tabLocator, 'PageHeader--tabs--link__active')
 
     if (!isActiveTab) {
-      await $productTab.click()
+      await tabLocator.click()
       await this.page.waitForLoadState('load')
     }
   }
