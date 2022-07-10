@@ -1,4 +1,4 @@
-import { ElementHandle, Locator, Page } from '@playwright/test'
+import { Locator, Page } from '@playwright/test'
 import { BasePage } from './Base'
 import { Table } from './Table'
 
