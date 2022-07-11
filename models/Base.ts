@@ -1,10 +1,10 @@
 import { ElementHandle, Frame, Locator, Page } from '@playwright/test'
 
 abstract class Base {
-  private frameOrPage: Frame | Page
+  private _frameOrPage: Frame | Page
 
   constructor(frameOrPage: Frame | Page) {
-    this.frameOrPage = frameOrPage
+    this._frameOrPage = frameOrPage
   }
 
   protected async autocompleteFill(
@@ -23,7 +23,7 @@ abstract class Base {
     let elementHandle: ElementHandle<HTMLElement>
 
     if (typeof selector === 'string') {
-      elementHandle = (await this.frameOrPage.$(selector)) as ElementHandle<HTMLElement>
+      elementHandle = (await this._frameOrPage.$(selector)) as ElementHandle<HTMLElement>
     } else {
       elementHandle = (await (selector as Locator).elementHandle()) as ElementHandle<HTMLElement>
     }
@@ -33,7 +33,14 @@ abstract class Base {
 
   async hasClass(selector: string | Locator, className: string): Promise<boolean> {
     const elementHandle = await this.getElementHandle(selector)
+
     return await elementHandle.evaluate((el, className) => el.classList.contains(className), className)
+  }
+
+  async hasText(selector: string | Locator, text: string): Promise<boolean> {
+    const elementHandle = await this.getElementHandle(selector)
+
+    return ((await elementHandle.textContent()) as string).includes(text)
   }
 
   async waitForState(
@@ -85,7 +92,7 @@ abstract class Base {
   }
 }
 
-abstract class BaseFrame extends Base {
+class BaseFrame extends Base {
   readonly frame: Frame
 
   constructor(frame: Frame) {
@@ -94,7 +101,7 @@ abstract class BaseFrame extends Base {
   }
 }
 
-abstract class BasePage extends Base {
+class BasePage extends Base {
   readonly page: Page
 
   constructor(page: Page) {
