@@ -1,6 +1,8 @@
 import type { PlaywrightTestConfig } from '@playwright/test'
 import { devices } from '@playwright/test'
-import 'dotenv/config'
+import dotenv from 'dotenv'
+
+dotenv.config({ path: `.env.${process.env.NODE_ENV || 'test'}` })
 
 /**
  * Read environment variables from file.
@@ -14,7 +16,7 @@ import 'dotenv/config'
 const config: PlaywrightTestConfig = {
   testDir: './tests',
   /* Maximum time one test can run for. */
-  timeout: 60 * 1000,
+  timeout: 120 * 1000,
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
@@ -43,7 +45,7 @@ const config: PlaywrightTestConfig = {
     // trace: "on-first-retry",
 
     // Configurations Added By Aaron
-    baseURL: process.env.TEST_ENV,
+    baseURL: process.env.PULSAR_ENV,
     bypassCSP: true,
     headless: !!process.env.CI,
     locale: 'en',

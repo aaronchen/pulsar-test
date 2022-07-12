@@ -1,10 +1,17 @@
 import { test, expect, ElementHandle } from '@playwright/test'
+import { Database } from '../../helpers/Database'
 import { Excel } from '../../helpers/Excel'
 import { Utils } from '../../helpers/Utils'
-import { UserInfo } from '../../models/Navigation'
+import { QuickSearch, UserInfo } from '../../models/Navigation'
+import { ProductPage } from '../../models/Product'
+import { Table } from '../../models/Table'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/pulsar2')
+})
+
+test.afterAll(async ({ page }) => {
+  await page.close()
 })
 
 test.describe('Sample Suite', () => {
@@ -119,11 +126,11 @@ test.describe('Sample Suite', () => {
     ])
     await page.locator('#ProductList .dualList-add').click()
 
-    await page.waitForLoadState('networkidle')
+    await page.waitForSelector('#ReleaseList .dualList-select[data-control="left"] option')
     await page.locator('#ReleaseList .dualList-add-all').click()
-    await page.waitForLoadState('networkidle')
+    await page.waitForSelector('#ComponentCategoryList .dualList-select[data-control="left"] option')
     await page.locator('#ComponentCategoryList .dualList-add-all').click()
-    await page.waitForLoadState('networkidle')
+    await page.waitForSelector('#ComponentRootList .dualList-select[data-control="left"] option')
     await page.locator('#ComponentRootList .dualList-add-all').click()
 
     const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#btnExport').click()])
@@ -135,9 +142,166 @@ test.describe('Sample Suite', () => {
     const firstHeader = Excel.getCellValue(file, 'F1') as string
     expect(firstHeader).toEqual('Bran')
 
-    const secondHeader = Excel.getCellValue(file, { columnIndex: 6, rowIndex: 0 }) as string
+    const secondHeader = Excel.getCellValue(file, { c: 6, r: 0 }) as string
     expect(secondHeader).toEqual('Cubano')
 
     expect(Excel.isEqual(file, file)).toBeTruthy()
+  })
+
+  test('can open Update Image Strategy window - Table page object', async ({ page }) => {
+    const quickSearch = new QuickSearch(page)
+    await quickSearch.fillAndClick('cubano', { resultText: 'HP EliteDesk 805 G6 Desktop Mini PC' })
+
+    const productPage = new ProductPage(page)
+    await productPage.gotoTab('Deliverables')
+
+    type SoftwareColumnNameType =
+      | 'target'
+      | 'id'
+      | 'componentCategory'
+      | 'name'
+      | 'language'
+      | 'partNumber'
+      | 'version'
+      | 'release'
+      | 'pin'
+      | 'alerts'
+      | 'img'
+      | 'corpReady'
+      | 'targetNotes'
+      | 'distribution'
+      | 'images'
+
+    type SoftwareTableMenuNameType = 'removeTarget' | 'updateTargetNotes' | 'updateImageStrategy'
+
+    const softwareTable = new Table<SoftwareColumnNameType, SoftwareTableMenuNameType>(
+      page,
+      'tileGrid',
+      {
+        target: 'Target',
+        id: 'DeliverableVersionId',
+        componentCategory: 'ComponentCategory',
+        name: 'DeliverableName',
+        language: 'Language',
+        partNumber: 'PartNumber',
+        version: 'ComponentVersion',
+        release: 'Release',
+        pin: 'InternalRevision',
+        alerts: 'Alerts',
+        img: 'DisplayImage',
+        corpReady: 'CorpReadyImage',
+        targetNotes: 'TargetNotes',
+        distribution: 'Distribution',
+        images: 'Image'
+      },
+      {
+        removeTarget: 'RemoveTarget',
+        updateTargetNotes: 'UpdateTargetNotes',
+        updateImageStrategy: 'UpdateImageStrategy'
+      }
+    )
+
+    await softwareTable.filter('name', 'flag')
+    await softwareTable.filter('partNumber', 'b2e')
+    await softwareTable.locateRow('name', 'Flag').click({ button: 'right' })
+
+    const [imageStrategyPage] = await Promise.all([
+      productPage.page.waitForEvent('popup'),
+      softwareTable.clickMenu('updateImageStrategy')
+    ])
+
+    await imageStrategyPage.bringToFront()
+
+    const componentLocator = imageStrategyPage
+      .locator('.PopupForm--title:text("Component")')
+      .locator('xpath=..')
+      .locator('.PopupForm--input--readonlyInfo')
+    await expect(componentLocator).toContainText('Flag - Bypass MiniDiags')
+  })
+
+  test('can open Update Image Strategy window - Product page object', async ({ page }) => {
+    const quickSearch = new QuickSearch(page)
+    await quickSearch.fillAndClick('cubano', { resultText: 'HP EliteDesk 805 G6 Desktop Mini PC' })
+
+    const productPage = new ProductPage(page)
+    await productPage.gotoTab('Deliverables')
+
+    await productPage.deliverableTab.setTableFiltersTo({ type: 'Software', team: 'Image Engineering' })
+
+    const softwareTable = productPage.deliverableTab.softwareTable
+    await softwareTable.filter('name', 'flag')
+    await softwareTable.filter('partNumber', 'b2e')
+    await softwareTable.locateRow('name', 'Flag').click({ button: 'right' })
+
+    const [imageStrategyPage] = await Promise.all([
+      productPage.page.waitForEvent('popup'),
+      softwareTable.clickMenu('updateImageStrategy')
+    ])
+
+    await imageStrategyPage.bringToFront()
+
+    const componentLocator = imageStrategyPage
+      .locator('.PopupForm--title:text("Component")')
+      .locator('xpath=..')
+      .locator('.PopupForm--input--readonlyInfo')
+    await expect(componentLocator).toContainText('Flag - Bypass MiniDiags')
+  })
+
+  test('can use Table page object model', async ({ page }) => {
+    const productName = '20190427ForUSAServer'
+
+    const quickSearch = new QuickSearch(page)
+    await quickSearch.fillAndClick(productName)
+
+    const productPage = new ProductPage(page)
+    await productPage.gotoTab('Deliverables')
+
+    await productPage.deliverableTab.setTableFiltersTo({ type: 'Software', team: 'All' })
+
+    const hardwareTable = productPage.deliverableTab.hardwareTable
+
+    // Filter
+    await hardwareTable.filter('name', 'jay')
+
+    // Click on a header to sort
+    await hardwareTable.locateHeader('componentCategory').click()
+
+    // Clear filter
+    await hardwareTable.filter('name', '')
+
+    // Locate row
+    await hardwareTable.locateRow('name', 'ZHAN 66 Pro G1 - 8471').click({ button: 'right' })
+    const [systemBoardVersionPage] = await Promise.all([
+      productPage.page.waitForEvent('popup'),
+      await hardwareTable.clickMenu('properties')
+    ])
+    systemBoardVersionPage.bringToFront()
+
+    // Locate cell
+    productPage.page.bringToFront()
+    await hardwareTable.locateCell('name', 'HP 50W Slim AC Adapter').click()
+    const [acAdapterVersionPage] = await Promise.all([
+      productPage.page.waitForEvent('popup'),
+      hardwareTable.locateCell('name', 'HP 50W Slim AC Adapter').locator('a').click()
+    ])
+    acAdapterVersionPage.bringToFront()
+  })
+
+  test('can use Database helper', async () => {
+    type AbtBusinessSegment = {
+      ID: number
+      Value: string
+      IsActive: boolean
+      CreatedBy: string
+    }
+
+    const db = new Database(process.env.MSSQL_CONNECTION as string)
+    const results = await db.select<AbtBusinessSegment>('SELECT * FROM AbtBusinessSegment WHERE Id = 1')
+    await db.close()
+
+    expect(results[0].ID).toEqual(1)
+    expect(results[0].Value).toEqual('Consumer AIO')
+    expect(results[0].IsActive).toBeTruthy()
+    expect(results[0].CreatedBy).toEqual('Dao, An')
   })
 })
