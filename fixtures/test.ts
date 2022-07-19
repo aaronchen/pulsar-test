@@ -1,14 +1,14 @@
-import { test as base, expect } from '@playwright/test'
+import { test as base, expect, Locator, Page } from '@playwright/test'
 import { BasePage } from '../models/Base'
 
 type Options = {
-  basePage: BasePage
+  basePage: Page & BasePage
 }
 
 const test = base.extend<Options>({
   basePage: async ({ page }, use) => {
-    await use(new BasePage(page))
+    await use(Object.assign(page, new BasePage(page)))
   }
 })
 
-export { test, expect }
+export { test, expect, Locator, Page }

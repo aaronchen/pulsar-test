@@ -5,6 +5,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('should have basePage', async ({ basePage }) => {
-  await basePage.page.locator('#quickSearchTextbox').fill('anna')
+  await basePage.locator('#quickSearchTextbox').fill('anna')
+
   expect(await basePage.waitForText('#resultTypeArea', 'Anna')).toBeTruthy()
 })
