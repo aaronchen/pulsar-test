@@ -19,6 +19,13 @@ abstract class Base {
     await itemsLocator.filter({ hasText: matchedName }).click()
   }
 
+  async fillAndBlur(selector: string | Locator, value: string): Promise<void> {
+    const elementHandle = await this.getElementHandle(selector)
+
+    await elementHandle.fill(value)
+    await elementHandle.evaluate((e) => e.blur())
+  }
+
   async getElementHandle(selector: string | Locator): Promise<ElementHandle<HTMLElement>> {
     let elementHandle: ElementHandle<HTMLElement>
 
