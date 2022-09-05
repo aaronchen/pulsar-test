@@ -19,11 +19,16 @@ abstract class Base {
     await itemsLocator.filter({ hasText: matchedName }).click()
   }
 
-  async fillAndBlur(selector: string | Locator, value: string): Promise<void> {
+  async fillAndBlur(selector: string | Locator, value: string, waitForValidation = false): Promise<void> {
     const elementHandle = await this.getElementHandle(selector)
 
     await elementHandle.fill(value)
     await elementHandle.evaluate((e) => e.blur())
+
+    if (waitForValidation) {
+      const validationHandle = await elementHandle.evaluateHandle((e) => e.nextElementSibling)
+      validationHandle.asElement()?.waitForElementState('hidden')
+    }
   }
 
   async getElementHandle(selector: string | Locator): Promise<ElementHandle<HTMLElement>> {
@@ -48,6 +53,14 @@ abstract class Base {
     const elementHandle = await this.getElementHandle(selector)
 
     return ((await elementHandle.textContent()) as string).includes(text)
+  }
+
+  async spaceCheck(selector: string | Locator, checked = true): Promise<void> {
+    const elementHandle = await this.getElementHandle(selector)
+
+    if ((await elementHandle.isChecked()) !== checked) {
+      await elementHandle.press('Space')
+    }
   }
 
   async waitForState(

@@ -16,7 +16,7 @@ dotenv.config({ path: `.env.${process.env.NODE_ENV || 'test'}` })
 const config: PlaywrightTestConfig = {
   testDir: './tests',
   /* Maximum time one test can run for. */
-  timeout: 120 * 1000,
+  timeout: 60 * 1000,
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
@@ -49,7 +49,8 @@ const config: PlaywrightTestConfig = {
     bypassCSP: true,
     headless: !!process.env.CI,
     locale: 'en',
-    trace: process.env.CI ? 'on-first-retry' : 'on',
+    // trace: process.env.CI ? 'on-first-retry' : 'on',
+    trace: 'on',
     viewport: { width: 1920, height: 1080 },
     video: 'off'
   },

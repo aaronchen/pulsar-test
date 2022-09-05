@@ -40,10 +40,12 @@ test.describe('DCR Test Suite @daily', () => {
 
     const dcrPage = new DcrPage(newPage)
 
-    await dcrPage.changeCategories.sku.check({ force: true })
+    // await dcrPage.changeCategories.sku.check({ force: true })
+    await dcrPage.spaceCheck(dcrPage.changeCategories.sku)
 
     const summary = `Summary-${Text.random(15, { whitespace: true })}-${Text.timestamp()}`
-    await dcrPage.fillAndBlur(dcrPage.summary, summary)
+    // await dcrPage.summary.fill(summary)
+    await dcrPage.fillAndBlur(dcrPage.summary, summary, true)
 
     await dcrPage.products.editSelection.click()
     await dcrPage.products.productName.fill(productName)

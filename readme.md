@@ -4,6 +4,7 @@
 git clone https://github.com/aaronchen/pulsar-test.git
 cd pulsar-test
 npm install
+npx playwright install chromium
 npx playwright install-deps chromium
 code . # Please install recommended extensions when you launch the workspace 
 ```
